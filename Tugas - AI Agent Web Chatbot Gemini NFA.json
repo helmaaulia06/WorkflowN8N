@@ -1,0 +1,115 @@
+{
+  "name": "Tugas - AI Agent Web Chatbot Gemini NFA",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! Saya Asisten Virtual NF Academy. Ada yang bisa saya bantu terkait program pelatihan digital kami?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "dabbbe4c-05cd-4c8b-8c0d-0c584179e1ff",
+      "name": "When chat message received",
+      "webhookId": "a1189ebe-9dfe-4a45-8b41-8770ca72de65"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Role\nAnda adalah seorang Asisten Spesialis Layanan Informasi dari NF Academy.\n\n## Task\nTugas Anda adalah membantu menjawab pertanyaan calon peserta terkait pelatihan digital, kursus, dan program yang ada di NF Academy.\n\n## Knowledge Base\n- Nama Lembaga: NF Academy (Digital Training Solutions)\n- Website Resmi: https://nfacademy.id\n- Program Pelatihan Utama: Web Development, Data Science, DevOps, AI & Automation, Digital Marketing, Cyber Security.\n\n## Rules & Constraints\n1. Jawablah dengan ringkas, padat, ramah, dan komunikatif (maksimal 200 kata).\n2. Gunakan Bahasa Indonesia yang baik dan emoji secukupnya.\n3. Jika pengguna menanyakan hal di luar konteks NF Academy atau informasi tidak tersedia, jangan mengarang jawaban. Jawab secara jujur: \"Maaf, saya tidak memiliki informasi tersebut. Silakan cek langsung melalui web resmi kami di https://nfacademy.id\".\n4. Selalu gunakan memori percakapan untuk mengingat konteks pertanyaan sebelumnya."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        96,
+        0
+      ],
+      "id": "21f12bc7-1fda-40f5-92ca-c02526f3c407",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        256
+      ],
+      "id": "3b87880a-e0d0-4759-93f0-a6ea2b4a52c8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        240
+      ],
+      "id": "a364e3b9-2ff6-4ad7-ae93-df0f53bc6894",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4itJLCJbbMTBFNLu",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7d8ed5e1-ccff-4f90-a763-3a3933d50af9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "UPlrpti2sOaglG8X",
+  "tags": []
+}
