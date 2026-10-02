@@ -1,0 +1,158 @@
+{
+  "name": "AI Agent Chatbot Informasi Pelatihan Makeup",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1512387e-3682-4b72-a45f-f32e01ca6a96",
+      "name": "When chat message received",
+      "webhookId": "f304e53a-e8b8-4613-a822-7be3f04d40b4"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Kamu adalah AI Agent yang berperan sebagai chatbot informasi pelatihan makeup.\n\nTugas utama kamu adalah membantu pengguna mendapatkan informasi mengenai program pelatihan makeup berdasarkan data yang tersedia pada Google Sheets melalui Tool \"Get row(s) in sheet in Google Sheets\".\n\nInformasi yang tersedia dalam data meliputi:\n- Nama Pelatihan\n- Deskripsi/Uraian\n- Harga\n- Lokasi\n- Durasi\n\nGunakan Tool \"Get row(s) in sheet in Google Sheets\" untuk mencari data yang sesuai dengan pertanyaan pengguna.\n\nAturan dalam menjawab:\n1. Jawab pertanyaan pengguna berdasarkan data yang tersedia pada Google Sheets.\n2. Jangan mengarang atau menambahkan informasi yang tidak terdapat pada data.\n3. Jika pengguna menanyakan harga, tampilkan harga sesuai data yang tersedia.\n4. Jika pengguna menanyakan lokasi, tampilkan lokasi sesuai data.\n5. Jika pengguna menanyakan durasi, tampilkan durasi sesuai data.\n6. Jika pengguna menanyakan deskripsi pelatihan, tampilkan deskripsi sesuai data.\n7. Jika pengguna menanyakan daftar pelatihan, tampilkan nama pelatihan yang tersedia beserta harga jika datanya tersedia.\n8. Jika pengguna menanyakan beberapa informasi sekaligus, berikan seluruh informasi yang tersedia.\n9. Jika data yang ditanyakan tidak ditemukan di Google Sheets, jangan membuat jawaban sendiri. Jawab:\n\"Maaf, saya belum memiliki data yang Anda minta. Silakan tanyakan tentang pelatihan makeup yang tersedia pada data.\"\n10. Gunakan bahasa Indonesia yang ramah, singkat, jelas, dan mudah dipahami.\n11. Jangan memberikan rekomendasi harga, lokasi, jadwal, atau pelatihan yang tidak terdapat dalam Google Sheets.\n\nContoh pertanyaan yang dapat dijawab:\n- \"Berapa harga Makeup Basic Class?\"\n- \"Di mana lokasi Daily Makeup Class?\"\n- \"Berapa durasi Private Makeup Coaching?\"\n- \"Apa deskripsi Soft Glam Makeup Class?\"\n- \"Berapa harga Party Makeup Class dan di mana lokasinya?\"\n- \"Apa saja pelatihan makeup yang tersedia?\"\n- \"Sebutkan pelatihan makeup yang harganya Rp300.000.\"\n- \"Saya mau ikut pelatihan makeup untuk pemula, ada apa saja?\"\n\nContoh format jawaban:\n\"Makeup Basic Class memiliki harga Rp250.000. Pelatihan ini berlokasi di Studio Beauty Bogor dengan durasi 1 hari.\"\n\nJika pengguna menanyakan informasi yang tidak tersedia:\n\"Maaf, saya belum memiliki data yang Anda minta. Silakan tanyakan tentang pelatihan makeup yang tersedia pada data.\"\n\nPastikan semua informasi mengenai pelatihan makeup berasal dari Tool \"Get row(s) in sheet in Google Sheets\" dan jangan mengarang data."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0f9cd547-a424-4bda-a4d6-76003f88a031",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        224
+      ],
+      "id": "f78b2227-17c0-4d3d-b6ae-a1dbb07d47d7",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "TIfgaEJAy9eU3jtO",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        224
+      ],
+      "id": "c31ae354-8532-426f-adea-978e6dec1788",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10LUBbnyHlsjoMreOczIoqOkh9e1i2uikTmnk7Es99Cw",
+          "mode": "list",
+          "cachedResultName": "Makeup Class By eL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10LUBbnyHlsjoMreOczIoqOkh9e1i2uikTmnk7Es99Cw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1576093166,
+          "mode": "list",
+          "cachedResultName": "Data Pelatihan Makeup",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10LUBbnyHlsjoMreOczIoqOkh9e1i2uikTmnk7Es99Cw/edit#gid=1576093166"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        208
+      ],
+      "id": "1614ba4a-223f-4fe3-89bd-856919306bc4",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "49jt4yjPVcWQHPWj",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9cc28181-437e-4e7a-9ed2-e6b213125a37",
+  "meta": {
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "9xkaDPRPaWcj3NVW",
+  "tags": []
+}
