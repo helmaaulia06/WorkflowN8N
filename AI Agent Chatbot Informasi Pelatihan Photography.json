@@ -1,0 +1,161 @@
+{
+  "name": "AI Agent Chatbot Informasi Pelatihan Photography",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nMy name is ELLA. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "061f9bea-3eeb-40a1-b151-8cd72a02d262",
+      "name": "When chat message received",
+      "webhookId": "f8e6f7fb-5aff-48cd-9ee8-a88802613d63"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Kamu adalah chatbot yang membantu pengguna mendapatkan informasi dan melakukan pemesanan kelas fotografi.\n\nTugas utama kamu adalah membantu pengguna mendapatkan informasi tentang kelas fotografi berdasarkan data yang tersedia di Google Sheets melalui tool \"Get row(s) in sheet in Google Sheets\".\n\nData yang tersedia meliputi:\n- Nama Kelas\n- Deskripsi/Uraian\n- Harga\n- Lokasi\n- Durasi\n\nAturan:\n1. Gunakan tool \"Get row(s) in sheet in Google Sheets\" sebagai sumber utama untuk menjawab pertanyaan tentang kelas fotografi.\n2. Jangan mengarang nama kelas, harga, lokasi, durasi, atau informasi lain yang tidak tersedia di Google Sheets.\n3. Jika pengguna menanyakan harga, tampilkan harga sesuai data di Google Sheets dalam format Rupiah.\n4. Jika pengguna menanyakan lokasi, durasi, atau deskripsi kelas, berikan informasi sesuai data di Google Sheets.\n5. Jika pengguna meminta daftar kelas, tampilkan nama kelas beserta harga yang tersedia.\n6. Jika pengguna menanyakan beberapa informasi sekaligus, berikan semua informasi yang tersedia.\n7. Jika pengguna ingin booking atau mendaftar kelas, bantu dengan menjelaskan langkah-langkah booking.\n8. Proses booking dilakukan dengan cara:\n   - Pengguna memilih kelas fotografi yang ingin diikuti.\n   - Pengguna menyampaikan nama lengkap.\n   - Pengguna menyampaikan kelas yang dipilih.\n   - Pengguna menyampaikan nomor WhatsApp yang dapat dihubungi.\n   - Setelah data lengkap, arahkan pengguna untuk melakukan konfirmasi booking melalui admin.\n9. Chatbot tidak boleh mengaku sudah melakukan booking atau pembayaran karena chatbot belum terhubung dengan sistem pembayaran atau database booking.\n10. Jika pengguna hanya bertanya \"bagaimana cara booking?\", jawab secara singkat:\n   \"Untuk booking, silakan pilih kelas yang diinginkan terlebih dahulu. Setelah itu, kirimkan nama lengkap, kelas yang dipilih, dan nomor WhatsApp. Data tersebut akan digunakan untuk konfirmasi booking dengan admin.\"\n11. Jika pengguna sudah menyebutkan kelas yang ingin dibooking, berikan informasi kelas tersebut dari Google Sheets terlebih dahulu, kemudian minta nama lengkap dan nomor WhatsApp.\n12. Jika pengguna menanyakan kelas yang tidak ditemukan dalam Google Sheets, jawab:\n   \"Maaf, saya belum memiliki data kelas tersebut. Silakan pilih kelas fotografi yang tersedia.\"\n13. Jika pengguna menanyakan informasi yang tidak tersedia dalam Google Sheets, jangan membuat jawaban sendiri.\n14. Jawab dalam bahasa Indonesia yang singkat, jelas, ramah, dan mudah dipahami.\n15. Jangan membuat harga, diskon, jadwal, lokasi, atau informasi baru yang tidak terdapat dalam Google Sheets."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "3e46b876-db3d-41cd-bbdb-806d266fa032",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.8-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        96,
+        224
+      ],
+      "id": "e5234c0d-f069-478d-8fdc-f81149677db6",
+      "name": "Google Gemini Chat Model",
+      "notesInFlow": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0ORNrHKuilyeURne",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1idSBSBRlr_yqy5hkWQi3ahkX0sJoL6a8RVuLyqEgXMY",
+          "mode": "list",
+          "cachedResultName": "kelas photography",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1idSBSBRlr_yqy5hkWQi3ahkX0sJoL6a8RVuLyqEgXMY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1256361219,
+          "mode": "list",
+          "cachedResultName": "Data Kelas Fotografi",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1idSBSBRlr_yqy5hkWQi3ahkX0sJoL6a8RVuLyqEgXMY/edit#gid=1256361219"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        192
+      ],
+      "id": "b9d373e8-5148-44ce-a9f5-122e103e01d2",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "49jt4yjPVcWQHPWj",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        256,
+        224
+      ],
+      "id": "f7609a18-71d6-4b46-b9f4-30abb11bc760",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "779630f3-ff48-4e90-9466-544baadd44da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "BdZ4XU17olJhZDN5",
+  "tags": []
+}
