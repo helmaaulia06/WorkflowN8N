@@ -1,0 +1,188 @@
+{
+  "name": "RAG AI Agent - Tanaman Hias",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! Saya Windah informasi perawatan tanaman hias indoor. Silakan tanyakan tentang penyiraman, pencahayaan, media tanam, pemupukan, hama, daun menguning, atau repotting.",
+        "options": {}
+      },
+      "id": "91df3d59-c81e-427e-8264-198383289373",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "rag-tanaman-hias-chat"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Kamu adalah AI Agent dalam chatbot RAG yang bertugas menjawab pertanyaan tentang perawatan tanaman hias indoor. Gunakan Supabase Vector Store sebagai sumber utama untuk menemukan informasi dari dokumen sumber. Jawab hanya berdasarkan informasi yang ditemukan dari dokumen tersebut. Jangan mengarang fakta, jadwal, dosis, harga, atau rekomendasi yang tidak terdapat di sumber. Jika informasi yang diminta tidak ditemukan dalam dokumen, katakan bahwa informasi tersebut belum ditemukan atau belum tersedia pada dokumen. Jawab dalam bahasa Indonesia yang singkat, jelas, ramah, dan mudah dipahami. Untuk pertanyaan lanjutan, manfaatkan konteks percakapan dari memory.\nGunakan Supabase Vector Store sebagai sumber utama informasi.\n\nAturan:\n1. Jawab hanya berdasarkan informasi yang ditemukan dari dokumen pada Supabase Vector Store.\n2. Jangan mengarang informasi yang tidak terdapat pada dokumen.\n3. Jika informasi yang ditanyakan tidak ditemukan pada dokumen, katakan:\n\"Maaf, informasi yang Anda tanyakan belum ditemukan pada dokumen yang tersedia.\"\n4. Jawab dalam bahasa Indonesia yang singkat, jelas, ramah, dan mudah dipahami.\n5. Gunakan informasi yang paling relevan dari hasil pencarian pada Supabase Vector Store.\n6. Jangan membuat fakta, dosis, jadwal, atau rekomendasi baru yang tidak terdapat pada dokumen."
+        }
+      },
+      "id": "fb12f71d-8a04-4bd8-b330-ece7df7ae777",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "96fdb3f3-6bd8-4a29-8d55-2f35de5df8c1",
+      "name": "Simple Memory - 5 Conversations",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Gunakan tool ini untuk mencari informasi yang relevan dari dokumen Panduan Dasar Perawatan Tanaman Hias Indoor yang tersimpan di Supabase Vector Store. Gunakan hasil pencarian sebagai sumber jawaban dan jangan mengarang informasi yang tidak ditemukan.",
+        "tableName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "documents",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "5f886c2e-2f91-42e0-b1f5-24d6557ce360",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        176
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "8sWIQJNOQ5kqX7iz",
+          "name": "Supabase account"
+        }
+      },
+      "notes": "WAJIB menggunakan project/database/table Supabase yang SAMA dengan Workflow 1. Table: documents. Query: match_documents."
+    },
+    {
+      "parameters": {},
+      "id": "c49ddf3a-ae3a-4a94-859d-f19ba188a69a",
+      "name": "Embeddings Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        768,
+        336
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0ORNrHKuilyeURne",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      },
+      "notes": "Gunakan credential Google Gemini yang sama dengan embedding pada Workflow 1 agar dimensi embedding konsisten dengan tabel Supabase."
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.6-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        208
+      ],
+      "id": "29e53e02-936f-42a3-8e9a-0b493305b745",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0ORNrHKuilyeURne",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory - 5 Conversations": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "889b616e-40d4-4e0b-9131-b64b3b3e647a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "sZ0DwUygi8RBuLGI",
+  "tags": []
+}
