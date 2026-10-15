@@ -1,0 +1,164 @@
+{
+  "name": "Tugas 5 - AI Chatbot Persiapan Interview Kerja",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "id": "a1678343-a06f-4aa0-8959-58460e599918",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "tugas5-interview-chat"
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "kamu  adalah AI assistant untuk membantu pengguna mempersiapkan interview kerja.\nGunakan informasi dari Tool \"Supabase Vector Store\" sebagai sumber utama jawaban.\nTopik yang dapat dijawab meliputi persiapan interview, perkenalan diri, kelebihan dan kekurangan, pengalaman, ekspektasi gaji, alasan perusahaan memilih kandidat, pertanyaan untuk interviewer, hal yang perlu dihindari, dan evaluasi setelah interview.\nJangan mengarang informasi yang tidak tersedia pada data di Supabase Vector Store.\nJika informasi yang dibutuhkan tidak tersedia di tool, jawab:\n\"Maaf, informasi tersebut belum tersedia dalam database panduan interview.\"\nBerikan jawaban dalam bahasa Indonesia yang jelas, praktis, dan mudah dipahami."
+        }
+      },
+      "id": "344b8cdd-020a-4b0a-8351-e1c3e260a370",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        304,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "interview_guide",
+        "toolDescription": "Digunakan untuk mencari informasi dari database panduan persiapan interview kerja, seperti persiapan interview, perkenalan diri, kelebihan dan kekurangan, pengalaman, ekspektasi gaji, alasan perusahaan memilih kandidat, pertanyaan untuk interviewer, dan hal yang perlu dihindari saat interview.",
+        "tableName": {
+          "__rl": true,
+          "value": "interview_guide",
+          "mode": "list",
+          "cachedResultName": "interview_guide"
+        },
+        "options": {}
+      },
+      "id": "55b83f66-8b42-43c2-a516-e575af0354f7",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        256
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "8sWIQJNOQ5kqX7iz",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-2"
+      },
+      "id": "0acaa397-b9bc-4656-abcf-2a62e924f175",
+      "name": "Embeddings Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        656,
+        464
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0ORNrHKuilyeURne",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.6-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        208
+      ],
+      "id": "15058023-df91-40b2-9d25-bbce339b9083",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "V4tnfrp2TxmHwrJJ",
+          "name": "Google Gemini(PaLM) Api account 7"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6e450df1-d9f5-4865-af87-97c989c7d626",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "mE58BZXtr0zers6q",
+  "tags": []
+}
